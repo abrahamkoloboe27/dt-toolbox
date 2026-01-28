@@ -206,8 +206,12 @@ def build_config(
                 # Extract storage config parameters
                 storage_key = key[8:]  # Remove "storage_" prefix
                 storage_config[storage_key] = value
-            elif key.startswith("notification_") or key.startswith("smtp_") or key.startswith("webhook_"):
-                # Extract notification config parameters
+            elif key.startswith("notification_"):
+                # Extract notification config parameters with prefix removed
+                notification_key = key[13:]  # Remove "notification_" prefix
+                notification_config[notification_key] = value
+            elif key.startswith("smtp_") or key.startswith("webhook_"):
+                # These are actual field names in NotificationConfig, keep as-is
                 notification_config[key] = value
             elif key.startswith("redaction_"):
                 # Extract redaction config parameters
