@@ -196,10 +196,36 @@ def build_config(
         notification_config["recipients"] = recipients
     args_config["notification"] = notification_config
 
-    # Add any additional kwargs
+    # Process kwargs and group by prefix (storage_, notification_, redaction_, etc.)
+    storage_config: dict[str, Any] = {}
+    redaction_config: dict[str, Any] = {}
+    
     for key, value in kwargs.items():
         if value is not None:
-            args_config[key] = value
+            if key.startswith("storage_"):
+                # Extract storage config parameters
+                storage_key = key[8:]  # Remove "storage_" prefix
+                storage_config[storage_key] = value
+            elif key.startswith("notification_"):
+                # Extract notification config parameters with prefix removed
+                notification_key = key[13:]  # Remove "notification_" prefix
+                notification_config[notification_key] = value
+            elif key.startswith("smtp_") or key.startswith("webhook_"):
+                # These are actual field names in NotificationConfig, keep as-is
+                notification_config[key] = value
+            elif key.startswith("redaction_"):
+                # Extract redaction config parameters
+                redaction_key = key[10:]  # Remove "redaction_" prefix
+                redaction_config[redaction_key] = value
+            else:
+                # Top-level config parameter
+                args_config[key] = value
+    
+    # Add grouped configs if they have content
+    if storage_config:
+        args_config["storage"] = storage_config
+    if redaction_config:
+        args_config["redaction"] = redaction_config
 
     # Merge all configs (file < env < args)
     merged = merge_configs(file_config, env_config, args_config)
