@@ -98,6 +98,28 @@ if __name__ == "__main__":
 La configuration suit un ordre de priorité:
 **Arguments fonction** > **Variables d'environnement** > **Fichier config**
 
+#### Fichier .env (recommandé pour le développement)
+
+Copier le fichier `.env.example` en `.env` et configurer vos valeurs:
+
+```bash
+# Copier le template
+cp .env.example .env
+
+# Éditer avec vos valeurs
+vim .env
+```
+
+Le fichier `.env.example` contient tous les paramètres disponibles avec des exemples:
+- Configuration basique (APP_NAME, OWNER, LOG_LEVEL, TAGS)
+- Configuration SMTP pour les emails
+- Configuration webhooks (Slack/Google Chat)
+- Configuration stockage (S3/MinIO)
+- Configuration redaction PII
+- Exemples multi-environnements
+
+**Note**: Le package charge automatiquement le fichier `.env` s'il existe.
+
 #### Via variables d'environnement
 
 ```bash
@@ -220,20 +242,118 @@ Voir le dossier [`examples/`](./examples/) pour des exemples complets:
 
 ## 🧪 Tests
 
+dt-toolbox inclut une suite de tests complète avec **112 tests** couvrant tous les cas d'usage.
+
+### Installation des dépendances de test
+
 ```bash
 # Installer les dépendances de dev
 pip install -e ".[dev]"
+```
 
-# Lancer les tests
+### Exécuter les tests
+
+**Option 1: Utiliser le script de test (recommandé)**
+
+```bash
+# Tous les tests
+python run_tests.py all
+
+# Tests unitaires uniquement
+python run_tests.py unit
+
+# Tests d'intégration
+python run_tests.py integration
+
+# Tests de scénarios réels
+python run_tests.py scenarios
+
+# Tests de cas limites
+python run_tests.py edge
+
+# Mode verbose
+python run_tests.py integration -v
+
+# Lister les types de tests disponibles
+python run_tests.py --list
+```
+
+**Option 2: Utiliser pytest directement**
+
+```bash
+# Tous les tests
 pytest tests/ -v
+
+# Tests spécifiques
+pytest tests/test_integration.py -v
+pytest tests/test_scenarios.py -v
+pytest tests/test_edge_cases.py -v
 
 # Avec couverture
 pytest tests/ --cov=dt_toolbox --cov-report=html
 
-# Linting
+# Test spécifique
+pytest tests/test_integration.py::TestCompleteWorkflows::test_complete_successful_workflow -v
+```
+
+### Types de tests
+
+#### Tests Unitaires (36 tests)
+- Configuration (environnement, fichiers, priorités)
+- Handlers de logging (JSON, rotation)
+- Monitoring (initialisation, décorateur)
+- Notifications (SMTP, webhooks)
+- Redaction PII
+- Stockage (S3, MinIO, local)
+
+#### Tests d'Intégration (21 tests)
+- Workflows complets de bout en bout
+- Capture d'exceptions
+- Notifications en conditions réelles
+- Upload de logs
+- Scénarios réels (ETL, ML, qualité données)
+
+#### Tests de Scénarios (25 tests)
+- Scripts de succès (ETL, batch, validation)
+- Scripts d'échec (connexion, erreurs données)
+- Redaction PII (credentials, API keys, paiement)
+- Notifications multiples
+- Tags et catégorisation
+- Jobs longs
+- Multi-environnements (dev/staging/prod)
+
+#### Tests de Cas Limites (28 tests)
+- Configuration manquante/invalide
+- Échecs réseau (SMTP, webhook, S3)
+- Erreurs de permissions
+- Données volumineuses
+- Caractères spéciaux (unicode, JSON)
+- Concurrence
+- Nettoyage des ressources
+
+### Résultats des tests
+
+```bash
+$ python run_tests.py all
+===================================
+Running all tests...
+112 tests collected
+112 passed in 3.45s
+===================================
+```
+
+### Linting et formatage
+
+```bash
+# Vérifier le formatage
 ruff check src/ tests/
 black --check src/ tests/
 isort --check-only src/ tests/
+
+# Corriger automatiquement
+black src/ tests/
+isort src/ tests/
+ruff check --fix src/ tests/
 ```
 
 ## 🐳 Docker
