@@ -95,7 +95,8 @@ def test_create_storage_backend_local():
 
 def test_create_storage_backend_invalid():
     """Test creating storage backend with invalid type."""
-    config = StorageConfig(backend="invalid")  # type: ignore
-    
     with pytest.raises(ValueError, match="Unsupported storage backend"):
+        config = StorageConfig(backend=StorageBackend.LOCAL)
+        # Manually set an invalid backend to bypass pydantic validation
+        config.backend = "invalid"  # type: ignore
         create_storage_backend(config)
