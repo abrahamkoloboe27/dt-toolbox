@@ -1,9 +1,8 @@
 """Tests for configuration module."""
+
 import os
 import tempfile
-from pathlib import Path
 
-import pytest
 import yaml
 
 from dt_toolbox.config import (
@@ -30,7 +29,7 @@ def test_load_config_from_file():
         }
         yaml.dump(config_data, f)
         config_path = f.name
-    
+
     try:
         config = load_config_from_file(config_path)
         assert config["app_name"] == "test_app"
@@ -48,9 +47,9 @@ def test_load_config_from_env(clean_env, monkeypatch):
     monkeypatch.setenv("DTB_SMTP_HOST", "smtp.example.com")
     monkeypatch.setenv("DTB_SMTP_PORT", "587")
     monkeypatch.setenv("DTB_NOTIFY_ON_SUCCESS", "true")
-    
+
     config = load_config_from_env()
-    
+
     assert config["app_name"] == "env_app"
     assert config["owner"] == "env@example.com"
     assert config["tags"] == ["tag1", "tag2", "tag3"]
@@ -66,18 +65,18 @@ def test_merge_configs():
         "owner": "owner1@example.com",
         "notification": {"smtp_host": "smtp1.com"},
     }
-    
+
     config2 = {
         "app_name": "app2",
         "notification": {"smtp_port": 587},
     }
-    
+
     config3 = {
         "tags": ["tag1"],
     }
-    
+
     merged = merge_configs(config1, config2, config3)
-    
+
     assert merged["app_name"] == "app2"  # Later config overrides
     assert merged["owner"] == "owner1@example.com"
     assert merged["notification"]["smtp_host"] == "smtp1.com"
@@ -93,7 +92,7 @@ def test_build_config_basic():
         recipients=["alert@example.com"],
         tags=["test"],
     )
-    
+
     assert config.app_name == "test_app"
     assert config.owner == "test@example.com"
     assert config.notification.recipients == ["alert@example.com"]
@@ -104,12 +103,12 @@ def test_build_config_basic():
 def test_build_config_with_env_override(clean_env, monkeypatch):
     """Test that env vars override file config."""
     monkeypatch.setenv("DTB_SMTP_HOST", "env-smtp.example.com")
-    
+
     config = build_config(
         app_name="test_app",
         owner="test@example.com",
     )
-    
+
     assert config.notification.smtp_host == "env-smtp.example.com"
 
 
@@ -120,5 +119,5 @@ def test_build_config_notify_on_success():
         owner="test@example.com",
         notify_on_success=True,
     )
-    
+
     assert config.notification.notify_on_success is True

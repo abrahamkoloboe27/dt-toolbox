@@ -1,7 +1,7 @@
 """Type definitions for dt-toolbox."""
+
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -42,15 +42,15 @@ class ExecutionSummary(BaseModel):
     run_id: str
     trace_id: str
     start_time: datetime
-    end_time: Optional[datetime] = None
-    duration_seconds: Optional[float] = None
+    end_time: datetime | None = None
+    duration_seconds: float | None = None
     exit_code: int = 0
     success: bool = True
-    error_message: Optional[str] = None
-    stacktrace: Optional[str] = None
-    tags: List[str] = Field(default_factory=list)
-    log_file: Optional[str] = None
-    log_url: Optional[str] = None
+    error_message: str | None = None
+    stacktrace: str | None = None
+    tags: list[str] = Field(default_factory=list)
+    log_file: str | None = None
+    log_url: str | None = None
 
 
 class NotificationConfig(BaseModel):
@@ -59,14 +59,14 @@ class NotificationConfig(BaseModel):
     enabled: bool = True
     notify_on_success: bool = False
     notify_on_failure: bool = True
-    recipients: List[EmailStr] = Field(default_factory=list)
-    smtp_host: Optional[str] = None
+    recipients: list[EmailStr] = Field(default_factory=list)
+    smtp_host: str | None = None
     smtp_port: int = 587
-    smtp_user: Optional[str] = None
-    smtp_password: Optional[str] = None
+    smtp_user: str | None = None
+    smtp_password: str | None = None
     smtp_use_tls: bool = True
-    webhook_url: Optional[str] = None
-    webhook_type: Optional[str] = None  # 'slack' or 'gchat'
+    webhook_url: str | None = None
+    webhook_type: str | None = None  # 'slack' or 'gchat'
 
 
 class StorageConfig(BaseModel):
@@ -74,26 +74,26 @@ class StorageConfig(BaseModel):
 
     enabled: bool = False
     backend: StorageBackend = StorageBackend.LOCAL
-    bucket_name: Optional[str] = None
+    bucket_name: str | None = None
     prefix: str = "logs"
     upload_threshold_kb: int = 200
     # AWS S3
-    aws_access_key_id: Optional[str] = None
-    aws_secret_access_key: Optional[str] = None
-    aws_region: Optional[str] = None
+    aws_access_key_id: str | None = None
+    aws_secret_access_key: str | None = None
+    aws_region: str | None = None
     # GCS
-    gcs_credentials_path: Optional[str] = None
+    gcs_credentials_path: str | None = None
     # MinIO
-    minio_endpoint: Optional[str] = None
-    minio_access_key: Optional[str] = None
-    minio_secret_key: Optional[str] = None
+    minio_endpoint: str | None = None
+    minio_access_key: str | None = None
+    minio_secret_key: str | None = None
 
 
 class RedactionConfig(BaseModel):
     """Configuration for PII redaction."""
 
     enabled: bool = True
-    patterns: List[str] = Field(
+    patterns: list[str] = Field(
         default_factory=lambda: [
             r"password['\"]?\s*[:=]\s*['\"]?[\w!@#$%^&*()]+",
             r"api[_-]?key['\"]?\s*[:=]\s*['\"]?[\w-]+",
@@ -110,12 +110,12 @@ class MonitorConfig(BaseModel):
 
     app_name: str
     owner: EmailStr
-    tags: List[str] = Field(default_factory=list)
+    tags: list[str] = Field(default_factory=list)
     log_dir: str = "logs"
     log_level: LogLevel = LogLevel.INFO
     log_format: str = "json"
     notification: NotificationConfig = Field(default_factory=NotificationConfig)
     storage: StorageConfig = Field(default_factory=StorageConfig)
     redaction: RedactionConfig = Field(default_factory=RedactionConfig)
-    run_id: Optional[str] = None
-    trace_id: Optional[str] = None
+    run_id: str | None = None
+    trace_id: str | None = None

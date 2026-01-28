@@ -1,4 +1,5 @@
 """Tests for notifier module."""
+
 from datetime import datetime
 
 import pytest
@@ -34,10 +35,10 @@ def test_smtp_notifier_success(mock_smtp, sample_summary):
         smtp_password="password",
         recipients=["recipient@example.com"],
     )
-    
+
     notifier = SMTPNotifier(config)
     result = notifier.send(sample_summary, NotificationLevel.SUCCESS)
-    
+
     assert result is True
     mock_smtp.send_message.assert_called_once()
 
@@ -48,10 +49,10 @@ def test_smtp_notifier_no_config(sample_summary):
         smtp_host=None,
         smtp_user=None,
     )
-    
+
     notifier = SMTPNotifier(config)
     result = notifier.send(sample_summary, NotificationLevel.SUCCESS)
-    
+
     assert result is False
 
 
@@ -62,7 +63,7 @@ def test_smtp_notifier_error_summary(mock_smtp):
         smtp_user="sender@example.com",
         recipients=["recipient@example.com"],
     )
-    
+
     summary = ExecutionSummary(
         app_name="test_app",
         owner="test@example.com",
@@ -75,10 +76,10 @@ def test_smtp_notifier_error_summary(mock_smtp):
         error_message="Test error",
         stacktrace="Traceback:\n  File test.py, line 1\n    error",
     )
-    
+
     notifier = SMTPNotifier(config)
     result = notifier.send(summary, NotificationLevel.ERROR)
-    
+
     assert result is True
 
 
@@ -88,13 +89,13 @@ def test_webhook_notifier_slack(mock_requests, sample_summary):
         webhook_url="https://hooks.slack.com/test",
         webhook_type="slack",
     )
-    
+
     notifier = WebhookNotifier(config)
     result = notifier.send(sample_summary, NotificationLevel.SUCCESS)
-    
+
     assert result is True
     mock_requests.assert_called_once()
-    
+
     # Check payload structure
     call_kwargs = mock_requests.call_args[1]
     payload = call_kwargs["json"]
@@ -107,13 +108,13 @@ def test_webhook_notifier_gchat(mock_requests, sample_summary):
         webhook_url="https://chat.googleapis.com/test",
         webhook_type="gchat",
     )
-    
+
     notifier = WebhookNotifier(config)
     result = notifier.send(sample_summary, NotificationLevel.SUCCESS)
-    
+
     assert result is True
     mock_requests.assert_called_once()
-    
+
     # Check payload structure
     call_kwargs = mock_requests.call_args[1]
     payload = call_kwargs["json"]
@@ -123,10 +124,10 @@ def test_webhook_notifier_gchat(mock_requests, sample_summary):
 def test_webhook_notifier_no_url(sample_summary):
     """Test webhook notifier with missing URL."""
     config = NotificationConfig(webhook_url=None)
-    
+
     notifier = WebhookNotifier(config)
     result = notifier.send(sample_summary, NotificationLevel.SUCCESS)
-    
+
     assert result is False
 
 
@@ -137,9 +138,9 @@ def test_create_notifiers_both():
         smtp_user="sender@example.com",
         webhook_url="https://hooks.slack.com/test",
     )
-    
+
     notifiers = create_notifiers(config)
-    
+
     assert len(notifiers) == 2
     assert any(isinstance(n, SMTPNotifier) for n in notifiers)
     assert any(isinstance(n, WebhookNotifier) for n in notifiers)
@@ -148,7 +149,7 @@ def test_create_notifiers_both():
 def test_create_notifiers_none():
     """Test creating notifiers with no configuration."""
     config = NotificationConfig()
-    
+
     notifiers = create_notifiers(config)
-    
+
     assert len(notifiers) == 0

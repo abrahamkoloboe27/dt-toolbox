@@ -1,14 +1,14 @@
 """Utility functions for dt-toolbox."""
+
 import os
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 
 def generate_run_id() -> str:
     """Generate a unique run ID.
-    
+
     Returns:
         A unique run identifier combining timestamp and UUID.
     """
@@ -19,7 +19,7 @@ def generate_run_id() -> str:
 
 def generate_trace_id() -> str:
     """Generate a unique trace ID.
-    
+
     Returns:
         A unique trace identifier.
     """
@@ -28,10 +28,10 @@ def generate_trace_id() -> str:
 
 def ensure_dir(path: str) -> Path:
     """Ensure directory exists, create if not.
-    
+
     Args:
         path: Directory path to ensure.
-        
+
     Returns:
         Path object for the directory.
     """
@@ -40,33 +40,33 @@ def ensure_dir(path: str) -> Path:
     return dir_path
 
 
-def get_log_file_path(app_name: str, log_dir: str = "logs", run_id: Optional[str] = None) -> str:
+def get_log_file_path(app_name: str, log_dir: str = "logs", run_id: str | None = None) -> str:
     """Generate log file path.
-    
+
     Args:
         app_name: Application name.
         log_dir: Base directory for logs.
         run_id: Optional run ID. If not provided, generates one.
-        
+
     Returns:
         Full path to the log file.
     """
     if run_id is None:
         run_id = generate_run_id()
-    
+
     app_log_dir = Path(log_dir) / app_name
     ensure_dir(str(app_log_dir))
-    
+
     log_file = app_log_dir / f"{run_id}.log"
     return str(log_file)
 
 
 def format_duration(seconds: float) -> str:
     """Format duration in human-readable format.
-    
+
     Args:
         seconds: Duration in seconds.
-        
+
     Returns:
         Formatted duration string.
     """
@@ -87,10 +87,10 @@ def format_duration(seconds: float) -> str:
 
 def get_file_size_kb(file_path: str) -> float:
     """Get file size in KB.
-    
+
     Args:
         file_path: Path to file.
-        
+
     Returns:
         File size in KB.
     """
@@ -102,12 +102,12 @@ def get_file_size_kb(file_path: str) -> float:
 
 def truncate_string(text: str, max_length: int = 1000, suffix: str = "...") -> str:
     """Truncate string to maximum length.
-    
+
     Args:
         text: Text to truncate.
         max_length: Maximum length.
         suffix: Suffix to add if truncated.
-        
+
     Returns:
         Truncated string.
     """

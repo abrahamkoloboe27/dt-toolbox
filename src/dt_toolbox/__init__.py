@@ -5,14 +5,14 @@ and alerting to data scripts and applications.
 
 Example:
     >>> from dt_toolbox import init_monitoring
-    >>> 
+    >>>
     >>> logger = init_monitoring(
     ...     app_name="etl_orders",
     ...     owner="data-team@company.com",
     ...     recipients=["alerts@company.com"],
     ...     tags=["daily", "etl"],
     ... )
-    >>> 
+    >>>
     >>> logger.info("Processing started")
     >>> # Your code here
     >>> logger.info("Processing complete")

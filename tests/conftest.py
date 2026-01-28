@@ -1,10 +1,10 @@
 """Pytest configuration and fixtures."""
+
 import os
 import smtplib
 import tempfile
-from pathlib import Path
-from typing import Generator
-from unittest.mock import MagicMock, Mock
+from collections.abc import Generator
+from unittest.mock import MagicMock
 
 import pytest
 import requests
@@ -22,11 +22,11 @@ def mock_smtp(monkeypatch: pytest.MonkeyPatch) -> Generator[MagicMock, None, Non
     """Mock SMTP server."""
     mock_server = MagicMock()
     mock_smtp_class = MagicMock(return_value=mock_server)
-    
+
     # Mock SMTP context manager
     mock_server.__enter__ = MagicMock(return_value=mock_server)
     mock_server.__exit__ = MagicMock(return_value=None)
-    
+
     monkeypatch.setattr(smtplib, "SMTP", mock_smtp_class)
     yield mock_server
 
@@ -37,7 +37,7 @@ def mock_requests(monkeypatch: pytest.MonkeyPatch) -> Generator[MagicMock, None,
     mock_response = MagicMock()
     mock_response.status_code = 200
     mock_response.raise_for_status = MagicMock()
-    
+
     mock_post = MagicMock(return_value=mock_response)
     monkeypatch.setattr(requests, "post", mock_post)
     yield mock_post
@@ -47,7 +47,7 @@ def mock_requests(monkeypatch: pytest.MonkeyPatch) -> Generator[MagicMock, None,
 def mock_boto3_client(monkeypatch: pytest.MonkeyPatch) -> Generator[MagicMock, None, None]:
     """Mock boto3 S3 client."""
     import boto3
-    
+
     mock_client = MagicMock()
     mock_boto3 = MagicMock(return_value=mock_client)
     monkeypatch.setattr(boto3, "client", mock_boto3)
